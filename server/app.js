@@ -2,6 +2,8 @@ import express from "express";
 import {
    getPortfolioAccounts,
    getAccountProfitLoss,
+   createOrder,
+   searchStock,
 } from "./ibkr/controllers.js";
 
 const app = express();
@@ -25,6 +27,26 @@ app.get("/getProfitLoss", async (req, res) => {
    } catch (error) {
       console.error(error);
       res.status(500).send("Error fetching profit and loss");
+   }
+});
+
+app.post("/createOrder", async (req, res) => {
+   try {
+      const data = await createOrder(req.body.accountID, req.body.order);
+      res.json(data);
+   } catch (error) {
+      console.error(error);
+      res.status(500).send("Error creating order");
+   }
+});
+
+app.get("/searchStock", async (req, res) => {
+   console.log(req);
+   try {
+      const data = await searchStock(req.query.symbols);
+      res.json(data);
+   } catch (error) {
+      console.error(error);
    }
 });
 
