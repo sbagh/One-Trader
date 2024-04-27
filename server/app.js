@@ -1,13 +1,30 @@
 import express from "express";
+const { exec } = require("child_process");
+const path = require("path");
+const dotenv = require("dotenv");
 import {
    getPortfolioAccounts,
    getAccountProfitLoss,
    createOrder,
-   searchStock,
+   searchStocks,
 } from "./ibkr/controllers.js";
 
 const app = express();
 app.use(express.json());
+
+// start the ib gateway - ensure to download and install the gateway
+app.get("/start-ib-gatway", (req, res) => {
+   const scriptPath = process.env.IBKR_GATEWAY_PATH;
+   exec(`${scriptPath} root/conf.yaml`, (error, stdout, stderr) => {
+      if (error) {
+         console.error(`exec error: ${error}`);
+         return res.status(500).send("Failed to start IB Gateway");
+      }
+      console.log(`stdout: ${stdout}`);
+      console.error(`stderr: ${stderr}`);
+      res.send("IB Gateway started");
+   });
+});
 
 app.get("/getAccount", async (req, res) => {
    try {
@@ -42,7 +59,7 @@ app.post("/createOrder", async (req, res) => {
 
 app.get("/searchStock", async (req, res) => {
    try {
-      const data = await searchStock(req.query.symbols);
+      const data = await searchStocks(req.query.symbols);
       res.json(data);
    } catch (error) {
       console.error(error);
