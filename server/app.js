@@ -9,7 +9,6 @@ import {
 const app = express();
 app.use(express.json());
 
-// Correct way to define the routes with async handlers
 app.get("/getAccount", async (req, res) => {
    try {
       const data = await getPortfolioAccounts();
@@ -31,8 +30,9 @@ app.get("/getProfitLoss", async (req, res) => {
 });
 
 app.post("/createOrder", async (req, res) => {
+   //    console.log(req.body);
    try {
-      const data = await createOrder(req.body.accountID, req.body.order);
+      const data = await createOrder(req.body.accountID, req.body.orders);
       res.json(data);
    } catch (error) {
       console.error(error);
@@ -41,7 +41,6 @@ app.post("/createOrder", async (req, res) => {
 });
 
 app.get("/searchStock", async (req, res) => {
-   console.log(req);
    try {
       const data = await searchStock(req.query.symbols);
       res.json(data);

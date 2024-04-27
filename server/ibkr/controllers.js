@@ -35,15 +35,23 @@ const getAccountProfitLoss = async () => {
 };
 
 // create order
-const createOrder = async (accountID, order) => {
+const createOrder = async (accountID, orders) => {
    const create_order_url = `${IBKR_BASE_URL}/iserver/account/${accountID}/orders`;
 
+   console.log("orders", orders);
+
    try {
-      const response = await axios.post(create_order_url, order, {
-         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      });
+      const response = await axios.post(
+         create_order_url,
+         { orders },
+         {
+            headers: { "Content-Type": "application/json" },
+            httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+         }
+      );
 
       console.log(response.data);
+
       return response.data;
    } catch (error) {
       console.error(error);
