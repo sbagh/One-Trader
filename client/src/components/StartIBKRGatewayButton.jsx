@@ -1,12 +1,12 @@
 import React from "react";
-const backEndUrl = "http://localhost:5100";
+const ibkrGatewayURL = "http://localhost:5100/start-ib-gateway";
 
-const startIBGatewayButton = () => {
+const StartIBGatewayButton = () => {
    const startIBGateway = async () => {
       try {
          console.log("Starting IB Gateway");
 
-         const response = await fetch(`${backEndUrl}/start-ib-gateway`);
+         const response = await fetch(ibkrGatewayURL);
          const data = await response.json();
 
          if (!response.ok) {
@@ -17,7 +17,7 @@ const startIBGatewayButton = () => {
          console.log(data.message);
 
          if (data.success && data.url) {
-            window.open(data.url, "_blank"); 
+            window.open(data.url, "_blank");
          }
       } catch (error) {
          console.error("Error starting IB Gateway: ", error);
@@ -27,4 +27,4 @@ const startIBGatewayButton = () => {
    return <button onClick={startIBGateway}>Login to IB Gateway</button>;
 };
 
-export default startIBGatewayButton;
+export default StartIBGatewayButton;

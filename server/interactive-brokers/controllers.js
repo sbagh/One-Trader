@@ -2,12 +2,7 @@ import axios from "axios";
 import https from "https";
 import { IBKR_BASE_URL } from "../config.js";
 
-export {
-   getPortfolioAccounts,
-   getAccountProfitLoss,
-   createOrder,
-   searchStocks,
-};
+export { getPortfolioAccounts, getAccountProfitLoss, createOrder, searchStock };
 
 // get portfolio account
 const getPortfolioAccounts = async () => {
@@ -63,8 +58,8 @@ const createOrder = async (accountID, orders) => {
    }
 };
 
-const searchStocks = async (symbols) => {
-   const searchStocksURL = `${IBKR_BASE_URL}/trsrv/stocks?symbols=${symbols}`;
+const searchStock = async (symbol) => {
+   const searchStocksURL = `${IBKR_BASE_URL}/trsrv/stocks?symbols=${symbol}`;
 
    try {
       const response = await axios.get(searchStocksURL, {

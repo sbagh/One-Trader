@@ -2,28 +2,20 @@ import express from "express";
 import shell from "shelljs";
 import cors from "cors";
 import dotenv from "dotenv";
-import path from "path"; // Added import for path
-
-dotenv.config();
-
-const result = dotenv.config();
-if (result.error) {
-   throw result.error;
-}
-console.log(result.parsed); // This will log the parsed content of your .env file
 
 import {
    getPortfolioAccounts,
    getAccountProfitLoss,
    createOrder,
-   searchStocks,
-} from "./ibkr/controllers.js";
+   searchStock,
+} from "./interactive-brokers/controllers.js";
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5200" }));
+dotenv.config();
 
-// start the ib gateway - download and install the gateway before hand
+// start the ib gateway
 app.get("/start-ib-gateway", (req, res) => {
    console.log("request to start IB Gateway");
 
@@ -85,7 +77,7 @@ app.post("/createOrder", async (req, res) => {
 
 app.get("/searchStock", async (req, res) => {
    try {
-      const data = await searchStocks(req.query.symbols);
+      const data = await searchStock(req.query.symbol);
       res.json(data);
    } catch (error) {
       console.error(error);

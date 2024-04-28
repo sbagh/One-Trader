@@ -1,10 +1,12 @@
 import "./App.css";
-import StartIBGatewayButton from "./components/start-ibkr-gateway"; // Adjust the path as necessary
+import StartIBGatewayButton from "./components/StartIBKRGatewayButton";
+import SearchStock from "./components/SearchStock";
 
 function App() {
    return (
       <div className="App">
          <StartIBGatewayButton />
+         <SearchStock />
       </div>
    );
 }
