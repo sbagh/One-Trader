@@ -1,7 +1,9 @@
 import express from "express";
-import { exec } from "child_process";
+import shell from "shelljs";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path"; // Added import for path
+
 dotenv.config();
 
 const result = dotenv.config();
@@ -21,24 +23,33 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:5200" }));
 
-// start the ib gateway - ensure to download and install the gateway
+// start the ib gateway - download and install the gateway before hand
 app.get("/start-ib-gateway", (req, res) => {
    console.log("request to start IB Gateway");
 
-   console.log("IBKR_GATEWAY_COMMAND", process.env.IBKR_GATEWAY_COMMAND);
-
-   exec(
-      `${process.env.IBKR_GATEWAY_PATH} root/conf.yaml`,
-      (error, stdout, stderr) => {
-         if (error) {
-            console.error(`exec error: ${error}`);
-            return res.status(500).send("Failed to start IB Gateway");
+   // change directory to the IBKR_GATEWAY_PATH and start the gateway
+   shell.cd(process.env.IBKR_GATEWAY_PATH);
+   shell.exec(
+      "./bin/run.sh root/conf.yaml",
+      { silent: false, async: true },
+      (code, stdout, stderr) => {
+         if (code !== 0) {
+            console.error("exec error:", stderr);
+            return res.status(500).json({
+               success: false,
+               message: "Failed to start IB Gateway",
+            });
          }
-         console.log(`stdout: ${stdout}`);
-         console.error(`stderr: ${stderr}`);
-         res.send("IB Gateway started");
+         console.log("stdout: ", stdout);
       }
    );
+
+   console.log("IB Gateway is starting...");
+   res.json({
+      success: true,
+      message: "IB Gateway is starting",
+      url: "https://localhost:5000",
+   });
 });
 
 app.get("/getAccount", async (req, res) => {

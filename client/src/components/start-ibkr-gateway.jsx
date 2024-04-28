@@ -7,19 +7,20 @@ const startIBGatewayButton = () => {
          console.log("Starting IB Gateway");
 
          const response = await fetch(`${backEndUrl}/start-ib-gateway`);
+         const data = await response.json();
 
-         if (response.ok) {
-            console.log("failed to start IB Gateway");
-            throw new Error("Failed to start IB Gateway", response.status);
+         if (!response.ok) {
+            console.error("Failed to start IB Gateway: ", data.message);
+            return;
          }
 
-         const data = await response.text(); // response from script execution is plain text
-         console.log(data);
+         console.log(data.message);
 
-         // redirect user to localhost:5000 for login (as per IBKR Gateway instructions)
-         window.open("https://localhost:5000", "_blank");
+         if (data.success && data.url) {
+            window.open(data.url, "_blank"); 
+         }
       } catch (error) {
-         console.error("Errro starting IB Gateway: ", error);
+         console.error("Error starting IB Gateway: ", error);
       }
    };
 
