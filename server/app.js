@@ -1,7 +1,15 @@
 import express from "express";
-const { exec } = require("child_process");
-const path = require("path");
-const dotenv = require("dotenv");
+import { exec } from "child_process";
+import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
+
+const result = dotenv.config();
+if (result.error) {
+   throw result.error;
+}
+console.log(result.parsed); // This will log the parsed content of your .env file
+
 import {
    getPortfolioAccounts,
    getAccountProfitLoss,
@@ -11,19 +19,26 @@ import {
 
 const app = express();
 app.use(express.json());
+app.use(cors({ origin: "http://localhost:5200" }));
 
 // start the ib gateway - ensure to download and install the gateway
-app.get("/start-ib-gatway", (req, res) => {
-   const scriptPath = process.env.IBKR_GATEWAY_PATH;
-   exec(`${scriptPath} root/conf.yaml`, (error, stdout, stderr) => {
-      if (error) {
-         console.error(`exec error: ${error}`);
-         return res.status(500).send("Failed to start IB Gateway");
+app.get("/start-ib-gateway", (req, res) => {
+   console.log("request to start IB Gateway");
+
+   console.log("IBKR_GATEWAY_COMMAND", process.env.IBKR_GATEWAY_COMMAND);
+
+   exec(
+      `${process.env.IBKR_GATEWAY_PATH} root/conf.yaml`,
+      (error, stdout, stderr) => {
+         if (error) {
+            console.error(`exec error: ${error}`);
+            return res.status(500).send("Failed to start IB Gateway");
+         }
+         console.log(`stdout: ${stdout}`);
+         console.error(`stderr: ${stderr}`);
+         res.send("IB Gateway started");
       }
-      console.log(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
-      res.send("IB Gateway started");
-   });
+   );
 });
 
 app.get("/getAccount", async (req, res) => {
