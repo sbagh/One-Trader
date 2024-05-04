@@ -1,6 +1,7 @@
 import axios from "axios";
 import https from "https";
 import { IBKR_BASE_URL } from "../config.js";
+import { json } from "express";
 
 export {
    getPortfolioAccounts,
@@ -8,6 +9,7 @@ export {
    createOrder,
    searchStock,
    confirmStatus,
+   searchContract,
 };
 
 const confirmStatus = async () => {
@@ -83,6 +85,22 @@ const searchStock = async (symbol) => {
 
    try {
       const response = await axios.get(searchStocksURL, {
+         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+      });
+
+      console.log(response.data);
+      return response.data;
+   } catch (error) {
+      console.error(error);
+   }
+};
+
+const searchContract = async (queryParameters) => {
+   const endpoint = "/iserver/secdef/search";
+
+   try {
+      const response = await axios.get(`${IBKR_BASE_URL}${endpoint}`, {
+         params: queryParameters,
          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       });
 

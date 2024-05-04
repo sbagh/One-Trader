@@ -9,6 +9,7 @@ import {
    createOrder,
    searchStock,
    confirmStatus,
+   searchContract,
 } from "./interactive-brokers/controllers.js";
 
 const app = express();
@@ -89,6 +90,15 @@ app.post("/createOrder", async (req, res) => {
 app.get("/searchStock", async (req, res) => {
    try {
       const data = await searchStock(req.query.symbol);
+      res.json(data);
+   } catch (error) {
+      console.error(error);
+   }
+});
+
+app.get("/searchContract", async (req, res) => {
+   try {
+      const data = await searchContract(req.query);
       res.json(data);
    } catch (error) {
       console.error(error);
