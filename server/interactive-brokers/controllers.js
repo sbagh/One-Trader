@@ -2,7 +2,27 @@ import axios from "axios";
 import https from "https";
 import { IBKR_BASE_URL } from "../config.js";
 
-export { getPortfolioAccounts, getAccountProfitLoss, createOrder, searchStock };
+export {
+   getPortfolioAccounts,
+   getAccountProfitLoss,
+   createOrder,
+   searchStock,
+   confirmStatus,
+};
+
+const confirmStatus = async () => {
+   const confirmStatusURL = `${IBKR_BASE_URL}/iserver/auth/status`;
+
+   try {
+      const response = await axios.get(confirmStatusURL, {
+         httpsAgent: new https.Agent({ rejectUnauthorized: false }), //  makes api calls to localhost, todo: remove this line
+      });
+      console.log(response.data);
+      return response.data;
+   } catch (error) {
+      console.error(error);
+   }
+};
 
 // get portfolio account
 const getPortfolioAccounts = async () => {

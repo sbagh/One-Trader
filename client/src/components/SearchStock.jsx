@@ -1,19 +1,22 @@
 import React, { useState } from "react";
+
 const searchStocksURL = "http://localhost:5100/searchStock";
 
 const SearchStock = () => {
    const [symbol, setSymbol] = useState("");
+   const [stockData, setStockData] = useState({});
+   const [showDropdown, setShowDropdown] = useState(false);
 
    const searchStockSymbol = async () => {
       if (!symbol) {
-         console.log("missing symbol");
+         console.log("Missing symbol");
          return;
       }
 
       try {
-         const params = new URLSearchParams({ symbol: symbol });
+         const params = new URLSearchParams({ symbol: symbol.toUpperCase() });
          const response = await fetch(
-            `${searchStocksURL}?&${params.toString()}`
+            `${searchStocksURL}?${params.toString()}`
          );
 
          if (!response.ok) {
@@ -22,9 +25,13 @@ const SearchStock = () => {
          }
 
          const data = await response.json();
+         setStockData(data);
+         setShowDropdown(true);
          console.log("Search Stock Data: ", data);
       } catch (error) {
          console.error(error);
+         setStockData({});
+         setShowDropdown(false);
       }
    };
 
@@ -37,16 +44,50 @@ const SearchStock = () => {
       searchStockSymbol();
    };
 
+   const handleSelectStock = (name) => {
+      setSymbol(name);
+      setShowDropdown(false);
+   };
+
    return (
-      <form>
-         <input
-            type="text"
-            placeholder="Enter Stock Symbol"
-            value={symbol}
-            onChange={handleChanges}
-         />
-         <button onClick={handleSubmit}>Search</button>
-      </form>
+      <div>
+         <form onSubmit={handleSubmit}>
+            <input
+               type="text"
+               placeholder="Enter Stock Symbol"
+               value={symbol}
+               onChange={handleChanges}
+               onBlur={() => setTimeout(() => setShowDropdown(false), 100)}
+               onFocus={() => stockData[symbol] && setShowDropdown(true)}
+            />
+            {showDropdown && stockData[symbol] && (
+               <ul
+                  style={{
+                     position: "absolute",
+                     listStyleType: "none",
+                     padding: 0,
+                  }}
+               >
+                  {stockData[symbol].map((stock, index) => (
+                     <li
+                        key={index}
+                        onClick={() => handleSelectStock(stock.name)}
+                        style={{ cursor: "pointer", padding: "5px" }}
+                     >
+                        {stock.name}
+                     </li>
+                  ))}
+               </ul>
+            )}
+            <button type="submit">Search</button>
+         </form>
+         {stockData[symbol] && stockData[symbol].length > 0 && (
+            <div>
+               <h3>Selected Stock:</h3>
+               <p>{symbol}</p>
+            </div>
+         )}
+      </div>
    );
 };
 

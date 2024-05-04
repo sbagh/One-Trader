@@ -8,6 +8,7 @@ import {
    getAccountProfitLoss,
    createOrder,
    searchStock,
+   confirmStatus,
 } from "./interactive-brokers/controllers.js";
 
 const app = express();
@@ -26,7 +27,7 @@ app.get("/start-ib-gateway", (req, res) => {
       { silent: false, async: true },
       (code, stdout, stderr) => {
          if (code !== 0) {
-            console.error("exec error:", stderr);
+            console.log("exec error:", stderr);
             return res.status(500).json({
                success: false,
                message: "Failed to start IB Gateway",
@@ -42,6 +43,16 @@ app.get("/start-ib-gateway", (req, res) => {
       message: "IB Gateway is starting",
       url: "https://localhost:5000",
    });
+});
+
+app.get("/confirmStatus", async (req, res) => {
+   try {
+      const data = await confirmStatus();
+      res.json(data);
+   } catch (error) {
+      console.error(error);
+      res.status(500).send("Error confirming status");
+   }
 });
 
 app.get("/getAccount", async (req, res) => {
