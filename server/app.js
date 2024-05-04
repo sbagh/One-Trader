@@ -10,6 +10,7 @@ import {
    searchStock,
    confirmStatus,
    searchContract,
+   getContractInfo,
 } from "./interactive-brokers/controllers.js";
 
 const app = express();
@@ -99,6 +100,15 @@ app.get("/searchStock", async (req, res) => {
 app.get("/searchContract", async (req, res) => {
    try {
       const data = await searchContract(req.query);
+      res.json(data);
+   } catch (error) {
+      console.error(error);
+   }
+});
+
+app.get("/getContractInfo", async (req, res) => {
+   try {
+      const data = await getContractInfo(req.query);
       res.json(data);
    } catch (error) {
       console.error(error);

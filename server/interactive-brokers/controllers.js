@@ -10,6 +10,7 @@ export {
    searchStock,
    confirmStatus,
    searchContract,
+   getContractInfo,
 };
 
 const confirmStatus = async () => {
@@ -101,6 +102,22 @@ const searchContract = async (queryParameters) => {
    try {
       const response = await axios.get(`${IBKR_BASE_URL}${endpoint}`, {
          params: queryParameters,
+         httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+      });
+
+      console.log(response.data);
+      return response.data;
+   } catch (error) {
+      console.error(error);
+   }
+};
+
+const getContractInfo = async (queryParams) => {
+   const endpoint = "/iserver/secdef/info";
+
+   try {
+      const response = await axios.get(`${IBKR_BASE_URL}${endpoint}`, {
+         params: queryParams,
          httpsAgent: new https.Agent({ rejectUnauthorized: false }),
       });
 
